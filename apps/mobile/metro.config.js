@@ -2,7 +2,7 @@ const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
 const {
   composePlugins,
-  // withIconTransformer,
+  withIconTransformer,
   withTurborepo,
 } = require("@zenncore/mobile/metro-config");
 
@@ -11,7 +11,7 @@ const config = getDefaultConfig(__dirname);
 
 const withZenncore = composePlugins(
   (config) => withTurborepo(config, __dirname),
-  // (config) => withIconTransformer(config),
+  (config) => withIconTransformer(config),
   (config) => {
     return withNativeWind(config, {
       input: "./src/globals.css",

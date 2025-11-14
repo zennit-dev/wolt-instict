@@ -1,4 +1,7 @@
 export * from "./arrow-right";
+export * from "./bag-search";
+export * from "./bell";
+export * from "./building"
 export * from "./check";
 export * from "./check-badge";
 export * from "./chevron-down";
@@ -25,8 +28,11 @@ export * from "./photo";
 export * from "./plus";
 export * from "./send-message";
 export * from "./square-chart";
+export * from "./store"
 export * from "./sunset";
 export * from "./support";
 export type * from "./types";
 export * from "./upload";
+export * from "./user";
+export * from "./utenciles"
 export * from "./x";

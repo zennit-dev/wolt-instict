@@ -27,6 +27,10 @@ const options = [
     entry: {
       "config/metro/index": "./src/config/metro/index.ts",
     },
+     copy: {
+      from: "./src/config/metro/transformers/legacy-icon-transformer.cjs",
+      to: "./dist/config/metro/transformers/legacy-icon-transformer.cjs",
+    },
     //TODO: remove cjs when expo updates to metro 0.83.2 (supports esm and typescript)
     format: ["cjs"],
   },

@@ -89,39 +89,17 @@ const webToNativeSVGTransformer = async (src) => {
           if (closingElement) closingElement.name.name = "Defs";
 
           break;
+        case "ellipse":
+          openingElement.name.name = "Ellipse";
+          if (closingElement) closingElement.name.name = "Ellipse";
+
+          break;
         case "title":
           path.remove();
 
           break;
         default:
           break;
-      }
-    },
-    ExportNamedDeclaration(path) {
-      const { declaration, specifiers } = path.node;
-
-      if (declaration) {
-        if (
-          t.isFunctionDeclaration(declaration) ||
-          t.isVariableDeclaration(declaration)
-        ) {
-          const id = declaration.declarations
-            ? declaration.declarations[0].id.name
-            : declaration.id.name;
-          ast.program.body.push(
-            t.callExpression(t.identifier("interopIcon"), [t.identifier(id)]),
-          );
-        }
-      } else if (specifiers) {
-        for (const specifier of specifiers) {
-          if (t.isExportSpecifier(specifier)) {
-            ast.program.body.push(
-              t.callExpression(t.identifier("interopIcon"), [
-                t.identifier(specifier.local.name),
-              ]),
-            );
-          }
-        }
       }
     },
   });
@@ -136,23 +114,64 @@ const webToNativeSVGTransformer = async (src) => {
         t.importSpecifier(t.identifier("Rect"), t.identifier("Rect")),
         t.importSpecifier(t.identifier("G"), t.identifier("G")),
         t.importSpecifier(t.identifier("Defs"), t.identifier("Defs")),
+        t.importSpecifier(t.identifier("Ellipse"), t.identifier("Ellipse")),
       ],
       t.stringLiteral("react-native-svg"),
     ),
     t.importDeclaration(
       [
         t.importSpecifier(
-          t.identifier("interopIcon"),
-          t.identifier("interopIcon"),
+          t.identifier("cssInterop"),
+          t.identifier("cssInterop"),
         ),
       ],
-      t.stringLiteral("@zenncore/mobile/helpers"),
+      t.stringLiteral("nativewind"),
     ),
   ];
 
   for (const importDeclaration of importDeclarations) {
     ast.program.body.unshift(importDeclaration);
   }
+
+  // Add cssInterop call for Svg component right after imports
+  const cssInteropCall = t.expressionStatement(
+    t.callExpression(t.identifier("cssInterop"), [
+      t.identifier("Svg"),
+      t.objectExpression([
+        t.objectProperty(
+          t.identifier("className"),
+          t.objectExpression([
+            t.objectProperty(t.identifier("target"), t.stringLiteral("style")),
+            t.objectProperty(
+              t.identifier("nativeStyleToProp"),
+              t.objectExpression([
+                t.objectProperty(
+                  t.identifier("stroke"),
+                  t.booleanLiteral(true),
+                ),
+                t.objectProperty(t.identifier("fill"), t.booleanLiteral(true)),
+                t.objectProperty(t.identifier("color"), t.booleanLiteral(true)),
+                t.objectProperty(
+                  t.identifier("opacity"),
+                  t.booleanLiteral(true),
+                ),
+                t.objectProperty(t.identifier("width"), t.booleanLiteral(true)),
+                t.objectProperty(
+                  t.identifier("height"),
+                  t.booleanLiteral(true),
+                ),
+                t.objectProperty(
+                  t.identifier("transform"),
+                  t.booleanLiteral(true),
+                ),
+              ]),
+            ),
+          ]),
+        ),
+      ]),
+    ]),
+  );
+  ast.program.body.splice(2, 0, cssInteropCall);
 
   const { code } = generate(ast);
   // console.log(code);
@@ -175,6 +194,7 @@ const createTransformer =
       filename.includes("packages/shared/icons/dist/index.js");
 
     if (isZenncoreIcon) {
+      console.log(await webToNativeSVGTransformer(src));
       return transformer.transform({
         src: await webToNativeSVGTransformer(src),
         filename,

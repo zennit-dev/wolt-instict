@@ -1,0 +1,17 @@
+import type { JSX } from "react";
+import type { IconProps } from "./types";
+
+export const UserIcon = ({ title, ...props }: IconProps): JSX.Element => {
+  return (
+    <svg
+      height="18"
+      width="18"
+      viewBox="0 0 18 18"
+      strokeWidth="1.5"
+      {...props}
+    >
+      {title && <title>{title}</title>}
+      <g fill="currentColor"><path fillRule="evenodd" clipRule="evenodd" d="M1 9.0005C1 4.58229 4.58179 1.0005 9 1.0005C13.4182 1.0005 17 4.58229 17 9.0005C17 13.4187 13.4182 17.0005 9 17.0005C4.58179 17.0005 1 13.4187 1 9.0005Z" fill="currentColor" fillOpacity=".4"></path><path fillRule="evenodd" clipRule="evenodd" d="M6.74811 7.75049C6.74811 6.50742 7.75552 5.50049 8.99811 5.50049C10.2407 5.50049 11.2481 6.50742 11.2481 7.75049C11.2481 8.99356 10.2407 10.0005 8.99811 10.0005C7.75552 10.0005 6.74811 8.99356 6.74811 7.75049Z" fill="currentColor"></path><path d="M13.7078 15.4693C12.3869 16.4323 10.7598 17.0005 8.99998 17.0005C7.24016 17.0005 5.61305 16.4323 4.29211 15.4692L4.40033 15.0609C4.92847 13.014 6.78638 11.5005 8.99995 11.5005C11.2135 11.5005 13.0714 13.0139 13.5996 15.0608L13.7078 15.4693Z" fill="currentColor"></path></g>
+    </svg>
+  );
+}; 

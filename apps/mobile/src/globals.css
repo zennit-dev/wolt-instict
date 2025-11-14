@@ -1,8 +1,74 @@
-/* @import "tailwindcss";
-@import "nativewind/theme"; */
-/* @import "@zenncore/tailwind-config";
-/* @import "@zenncore/mobile/tailwind-config"; */
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark theme - default dark mode */
+    /* background shades - dark blue-gray matching the design */
+    --background-dimmed: #242424;
+    --background: #141414;
+    --background-rich: #334155;
+
+    /* foreground shades - white and gray text */
+    --foreground-dimmed: #717275;
+    --foreground: #ffffff;
+    --foreground-rich: #f9fafb;
+
+    /* emphasis shades - white text for primary content */
+    --emphasis-dimmed: #9ca3af;
+    --emphasis: #d1d5db;
+    --emphasis-rich: #ffffff;
+    --emphasis-foreground: #1f2937;
+
+    /* accent shades - dark gray for cards and borders */
+    --accent-dimmed: #1f2937;
+    --accent: #374151;
+    --accent-rich: #4b5563;
+    --accent-foreground: #f3f4f6;
+
+    /* primary shades - blue */
+    --primary-dimmed: #021533;
+    --primary: #0c2c5d;
+    --primary-rich: #134694;
+
+    /* secondary shades - teal green matching the design */
+    --secondary-dimmed: #0d9488;
+    --secondary: #14b8a6;
+    --secondary-rich: #2dd4bf;
+
+    /* error shades */
+    --error-dimmed: #b91c1c;
+    --error: #dc2626;
+    --error-rich: #ef4444;
+    --error-foreground: #fca5a5;
+
+    /* success shades */
+    --success-dimmed: #059669;
+    --success: #10b981;
+    --success-rich: #34d399;
+    --success-foreground: #065f46;
+
+    /* info shades - blue for notifications and active states */
+    --info-dimmed: #1e40af;
+    --info: #3b82f6;
+    --info-rich: #60a5fa;
+    --info-foreground: #dbeafe;
+
+    /* warning shades */
+    --warning-dimmed: #d97706;
+    --warning: #f59e0b;
+    --warning-rich: #fbbf24;
+    --warning-foreground: #92400e;
+
+    /* neutral shades */
+    --neutral-dimmed: #5f5f5f;
+    --neutral: #8b8b9e;
+    --neutral-rich: #8a8a9c;
+    --neutral-foreground: #353535;
+
+    --font-body: "Nunito Sans";
+    --text-2xs: 0.6rem;
+    --rounded-3xl: 1.5rem;
+  }
+}
