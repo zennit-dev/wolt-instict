@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, spyOn } from "bun:test";
 import * as googleAI from "@ai-sdk/google";
 import * as ai from "ai";
 import type { MealRecommendationParams } from "@/types/meal-recommendation";
-import { getMealRecommendation } from "./suggestions";
+import { getSuggestions } from "./suggestions";
 
-describe("getMealRecommendation (suggestions)", () => {
+describe("getSuggestions", () => {
   const originalEnv = process.env.GEMINI_API_KEY;
   const validParams: MealRecommendationParams = {
     userId: "user123",
@@ -21,12 +21,11 @@ describe("getMealRecommendation (suggestions)", () => {
   };
 
   let mockGenerateObject: ReturnType<typeof spyOn>;
-  let mockGenerateText: ReturnType<typeof spyOn>;
 
   beforeEach(() => {
     process.env.GEMINI_API_KEY = "test-api-key";
 
-    // Mock generateObject to return a valid AISuggestion response
+    // Mock generateObject to return a valid AISuggestion response with 2-5 items
     const mockResponse = {
       object: {
         background: "#FF6B6B",
@@ -37,6 +36,11 @@ describe("getMealRecommendation (suggestions)", () => {
             description: "Chicken & Quinoa Protein Bowl with fresh vegetables",
             price: 16.2,
           },
+          {
+            image: "https://example.com/protein-smoothie.jpg",
+            description: "Green Power Smoothie with whey protein",
+            price: 8.5,
+          },
         ],
         icon: "salad",
         time: 1800,
@@ -46,9 +50,6 @@ describe("getMealRecommendation (suggestions)", () => {
     mockGenerateObject = spyOn(ai, "generateObject").mockResolvedValue(
       mockResponse as any,
     );
-    mockGenerateText = spyOn(ai, "generateText").mockResolvedValue({
-      text: JSON.stringify(mockResponse.object),
-    } as any);
     const mockModel = {} as any;
     spyOn(googleAI, "createGoogleGenerativeAI").mockReturnValue(
       ((modelName: string) => mockModel) as any,
@@ -58,30 +59,6 @@ describe("getMealRecommendation (suggestions)", () => {
   afterEach(() => {
     process.env.GEMINI_API_KEY = originalEnv;
     mockGenerateObject.mockRestore();
-    if (mockGenerateText) {
-      mockGenerateText.mockRestore();
-    }
-  });
-
-  it("should throw error when userId is missing", async () => {
-    const params = { ...validParams, userId: "" };
-    await expect(getMealRecommendation(params)).rejects.toThrow(
-      "Missing required fields: userId, dayOfWeek, timeOfDay",
-    );
-  });
-
-  it("should throw error when dayOfWeek is missing", async () => {
-    const params = { ...validParams, dayOfWeek: "" as any };
-    await expect(getMealRecommendation(params)).rejects.toThrow(
-      "Missing required fields: userId, dayOfWeek, timeOfDay",
-    );
-  });
-
-  it("should throw error when timeOfDay is missing", async () => {
-    const params = { ...validParams, timeOfDay: "" as any };
-    await expect(getMealRecommendation(params)).rejects.toThrow(
-      "Missing required fields: userId, dayOfWeek, timeOfDay",
-    );
   });
 
   it("should throw error when GEMINI_API_KEY is not configured", async () => {
@@ -91,17 +68,18 @@ describe("getMealRecommendation (suggestions)", () => {
       throw new Error("API key is required");
     });
     
-    await expect(getMealRecommendation(validParams)).rejects.toThrow();
+    await expect(getSuggestions(validParams)).rejects.toThrow();
   });
 
   it("should successfully call Gemini API with valid parameters", async () => {
-    const result = await getMealRecommendation(validParams);
+    const result = await getSuggestions(validParams);
 
     expect(result).toBeDefined();
     expect(result.background).toBe("#FF6B6B");
     expect(result.title).toBe("Perfect post-workout refuel");
     expect(result.items).toBeDefined();
-    expect(result.items).toHaveLength(1);
+    expect(result.items.length).toBeGreaterThanOrEqual(2);
+    expect(result.items.length).toBeLessThanOrEqual(5);
     expect(result.items[0].image).toBe("https://example.com/chicken-bowl.jpg");
     expect(result.items[0].description).toBe(
       "Chicken & Quinoa Protein Bowl with fresh vegetables",
@@ -135,6 +113,11 @@ describe("getMealRecommendation (suggestions)", () => {
             description: "Margherita Pizza",
             price: 12.5,
           },
+          {
+            image: "https://example.com/fries.jpg",
+            description: "French Fries",
+            price: 5.0,
+          },
         ],
         icon: "burger",
         time: 2400,
@@ -148,7 +131,7 @@ describe("getMealRecommendation (suggestions)", () => {
       calendarEventParticipants: 3,
     };
 
-    const result = await getMealRecommendation(paramsWithGroup);
+    const result = await getSuggestions(paramsWithGroup);
 
     expect(result).toBeDefined();
     expect(result.group).toBeDefined();
@@ -158,6 +141,8 @@ describe("getMealRecommendation (suggestions)", () => {
       "https://example.com/avatar1.jpg",
     );
     expect(result.group?.friends[1].name).toBe("Sam");
+    expect(result.items.length).toBeGreaterThanOrEqual(2);
+    expect(result.items.length).toBeLessThanOrEqual(5);
   });
 
   it("should handle all icon types", async () => {
@@ -176,9 +161,14 @@ describe("getMealRecommendation (suggestions)", () => {
           title: `Test with ${iconType}`,
           items: [
             {
-              image: "https://example.com/item.jpg",
-              description: "Test item",
+              image: "https://example.com/item1.jpg",
+              description: "Test item 1",
               price: 10.0,
+            },
+            {
+              image: "https://example.com/item2.jpg",
+              description: "Test item 2",
+              price: 8.0,
             },
           ],
           icon: iconType,
@@ -188,8 +178,10 @@ describe("getMealRecommendation (suggestions)", () => {
 
       mockGenerateObject.mockResolvedValueOnce(mockResponse as any);
 
-      const result = await getMealRecommendation(validParams);
+      const result = await getSuggestions(validParams);
       expect(result.icon).toBe(iconType);
+      expect(result.items.length).toBeGreaterThanOrEqual(2);
+      expect(result.items.length).toBeLessThanOrEqual(5);
     }
   });
 
@@ -206,96 +198,21 @@ describe("getMealRecommendation (suggestions)", () => {
       calendarEventParticipants: 5,
     };
 
-    const result = await getMealRecommendation(paramsWithOptionals);
+    const result = await getSuggestions(paramsWithOptionals);
     expect(result).toBeDefined();
     expect(mockGenerateObject).toHaveBeenCalled();
+    expect(result.items.length).toBeGreaterThanOrEqual(2);
+    expect(result.items.length).toBeLessThanOrEqual(5);
   });
 
   it("should handle error from Gemini API", async () => {
     mockGenerateObject.mockRejectedValueOnce(
       new Error("API Error: Rate limit exceeded"),
     );
-    // Also make generateText fail so the error propagates
-    mockGenerateText.mockRejectedValueOnce(
-      new Error("API Error: Rate limit exceeded"),
-    );
 
-    await expect(getMealRecommendation(validParams)).rejects.toThrow(
+    await expect(getSuggestions(validParams)).rejects.toThrow(
       "API Error: Rate limit exceeded",
     );
-  });
-
-  it("should fallback to generateText when generateObject fails", async () => {
-    // First call fails
-    mockGenerateObject.mockRejectedValueOnce(
-      new Error("generateObject failed"),
-    );
-
-    // generateText should be called as fallback
-    const result = await getMealRecommendation(validParams);
-
-    expect(result).toBeDefined();
-    expect(result.background).toBe("#FF6B6B");
-    expect(result.title).toBe("Perfect post-workout refuel");
-    expect(mockGenerateText).toHaveBeenCalled();
-  });
-
-  it("should handle generateText response with markdown code blocks", async () => {
-    mockGenerateObject.mockRejectedValueOnce(
-      new Error("generateObject failed"),
-    );
-
-    const jsonWithMarkdown = "```json\n" + JSON.stringify({
-      background: "#FF6B6B",
-      title: "Test title",
-      items: [
-        {
-          image: "https://example.com/item.jpg",
-          description: "Test item",
-          price: 15.0,
-        },
-      ],
-      icon: "burger",
-      time: 2000,
-    }) + "\n```";
-
-    mockGenerateText.mockResolvedValueOnce({
-      text: jsonWithMarkdown,
-    } as any);
-
-    const result = await getMealRecommendation(validParams);
-
-    expect(result).toBeDefined();
-    expect(result.background).toBe("#FF6B6B");
-    expect(result.title).toBe("Test title");
-    expect(result.items[0].price).toBe(15.0);
-  });
-
-  it("should throw error when generated object has no items", async () => {
-    // Reset mocks to ensure clean state
-    mockGenerateObject.mockReset();
-    mockGenerateText.mockReset();
-    
-    const mockResponseNoItems = {
-      object: {
-        background: "#FF6B6B",
-        title: "Test title",
-        items: [],
-        icon: "salad",
-        time: 1800,
-      },
-    };
-
-    // generateObject returns empty items, which should trigger validation error
-    mockGenerateObject.mockResolvedValueOnce(mockResponseNoItems as any);
-    // generateText also returns empty items for fallback path
-    mockGenerateText.mockResolvedValueOnce({
-      text: JSON.stringify(mockResponseNoItems.object),
-    } as any);
-
-    // Zod validation will throw before our custom check in the fallback path
-    // The error will be about array being too small
-    await expect(getMealRecommendation(validParams)).rejects.toThrow();
   });
 
   it("should handle context vector building with boolean values", async () => {
@@ -309,12 +226,14 @@ describe("getMealRecommendation (suggestions)", () => {
       isRecurring: true,
     };
 
-    const result = await getMealRecommendation(params);
+    const result = await getSuggestions(params);
     expect(result).toBeDefined();
     expect(mockGenerateObject).toHaveBeenCalled();
+    expect(result.items.length).toBeGreaterThanOrEqual(2);
+    expect(result.items.length).toBeLessThanOrEqual(5);
   });
 
-  it("should handle multiple items in the response", async () => {
+  it("should handle multiple items in the response (2-5 items)", async () => {
     const mockResponseMultipleItems = {
       object: {
         background: "#9B59B6",
@@ -343,27 +262,62 @@ describe("getMealRecommendation (suggestions)", () => {
 
     mockGenerateObject.mockResolvedValueOnce(mockResponseMultipleItems as any);
 
-    const result = await getMealRecommendation(validParams);
+    const result = await getSuggestions(validParams);
 
     expect(result).toBeDefined();
+    expect(result.items.length).toBeGreaterThanOrEqual(2);
+    expect(result.items.length).toBeLessThanOrEqual(5);
     expect(result.items).toHaveLength(3);
     expect(result.items[0].price).toBe(20.0);
     expect(result.items[1].price).toBe(8.5);
     expect(result.items[2].price).toBe(3.0);
   });
 
-  it("should handle parse error in generateText fallback", async () => {
-    mockGenerateObject.mockRejectedValueOnce(
-      new Error("generateObject failed"),
-    );
+  it("should handle 5 items (maximum)", async () => {
+    const mockResponseFiveItems = {
+      object: {
+        background: "#9B59B6",
+        title: "Complete meal set",
+        items: [
+          { image: "https://example.com/item1.jpg", description: "Item 1", price: 10.0 },
+          { image: "https://example.com/item2.jpg", description: "Item 2", price: 10.0 },
+          { image: "https://example.com/item3.jpg", description: "Item 3", price: 10.0 },
+          { image: "https://example.com/item4.jpg", description: "Item 4", price: 10.0 },
+          { image: "https://example.com/item5.jpg", description: "Item 5", price: 10.0 },
+        ],
+        icon: "dessert",
+        time: 3000,
+      },
+    };
 
-    mockGenerateText.mockResolvedValueOnce({
-      text: "This is not valid JSON",
-    } as any);
+    mockGenerateObject.mockResolvedValueOnce(mockResponseFiveItems as any);
 
-    await expect(getMealRecommendation(validParams)).rejects.toThrow(
-      "Failed to parse JSON response",
-    );
+    const result = await getSuggestions(validParams);
+
+    expect(result).toBeDefined();
+    expect(result.items).toHaveLength(5);
+  });
+
+  it("should handle 2 items (minimum)", async () => {
+    const mockResponseTwoItems = {
+      object: {
+        background: "#9B59B6",
+        title: "Minimal meal set",
+        items: [
+          { image: "https://example.com/item1.jpg", description: "Item 1", price: 10.0 },
+          { image: "https://example.com/item2.jpg", description: "Item 2", price: 10.0 },
+        ],
+        icon: "dessert",
+        time: 3000,
+      },
+    };
+
+    mockGenerateObject.mockResolvedValueOnce(mockResponseTwoItems as any);
+
+    const result = await getSuggestions(validParams);
+
+    expect(result).toBeDefined();
+    expect(result.items).toHaveLength(2);
   });
 });
 

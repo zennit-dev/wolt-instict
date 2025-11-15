@@ -268,8 +268,8 @@ async function testSuggestions() {
     if (!["football&popcorn", "sushi", "burger", "salad", "dessert"].includes(result.icon)) {
       errors.push(`Invalid icon: ${result.icon}`);
     }
-    if (!Array.isArray(result.items) || result.items.length === 0) {
-      errors.push("Invalid or empty items array");
+    if (!Array.isArray(result.items) || result.items.length < 2 || result.items.length > 5) {
+      errors.push(`Invalid items array: expected 2-5 items, got ${result.items.length || 0}`);
     } else {
       result.items.forEach((item, index) => {
         if (!item.image) errors.push(`Item ${index + 1}: Missing image`);
