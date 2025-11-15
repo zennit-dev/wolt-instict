@@ -17,6 +17,8 @@
     "dev:packages": "turbo dev --filter=@zenncore/*",
     "lint": "biome check --write",
     "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:gemini": "turbo run test:gemini",
     "outdated": "turbo run outdated && bun outdated -r",
     "clean": "turbo run clean && rm -rf node_modules"
   },

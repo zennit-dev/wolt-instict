@@ -10,6 +10,12 @@
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
+    "test": {
+      "cache": false
+    },
+    "test:gemini": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true
