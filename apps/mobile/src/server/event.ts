@@ -4,10 +4,7 @@ import type { Day, Season } from "./date";
  * Search for relevant events happening today/soon
  */
 
-export const queryRelevant = async (
-  day: Day,
-  season: Season
-): Promise<string> => {
+export const queryRelevant = async (day: Day, season: Season) => {
   try {
     const query = encodeURIComponent(`events ${day} today ${season} 2025`);
 

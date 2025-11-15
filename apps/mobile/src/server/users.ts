@@ -50,7 +50,7 @@ export const get = ((input) => {
   const ids = isArray ? input : [input];
 
   const selected = ids.map((id) => {
-    const item = all.find((item) => item.userId === id);
+    const item = all.find((item) => item.id === id);
     if (!item) throw new Error(`Friend with id ${id} not found`);
 
     return item;
