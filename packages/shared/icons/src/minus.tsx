@@ -11,14 +11,13 @@ export const MinusIcon = ({ title, ...props }: IconProps): JSX.Element => {
       {...props}
     >
       {title && <title>{title}</title>}
-      <g fill="currentColor">
+      <g>
         <path
           d="M3.25 9H14.75"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
       </g>
     </svg>

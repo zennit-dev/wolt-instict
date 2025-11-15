@@ -12,7 +12,7 @@ export const transform = (template: string, { svg }: { svg: string }) => {
   const content = editable.match(/<svg[^>]*>([\s\S]*)<\/svg>/)?.[1] || "";
 
   const processed = content
-    .replace(/fill="(?!none)[^"]*"/g, 'fill="currentColor"')
+    .replace(/fill="(?!none)[^"]*"/g, "")
     .replace(/stroke="(?!none)[^"]*"/g, 'stroke="currentColor"')
     .replace(/(?!data-)([a-z-]+)="([^"]*)"/g, (_, key, value) => {
       const camelAttributeKey = kebabToCamel(key);

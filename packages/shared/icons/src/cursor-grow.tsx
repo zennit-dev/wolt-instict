@@ -11,7 +11,7 @@ export const CursorGrowIcon = ({ title, ...props }: IconProps): JSX.Element => {
       {...props}
     >
       {title && <title>{title}</title>}
-      <g fill="currentColor">
+      <g>
         <path
           fill="none"
           stroke="currentColor"

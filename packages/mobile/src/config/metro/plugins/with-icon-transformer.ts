@@ -14,7 +14,7 @@ import type { MetroConfig } from "expo/metro-config";
 export const withIconTransformer = (config: MetroConfig): MetroConfig => {
   const transformerPath = path.resolve(
     __dirname,
-    "./transformers/icon-transformer.ts",
+    "./transformers/legacy-icon-transformer.cjs",
   );
 
   return {

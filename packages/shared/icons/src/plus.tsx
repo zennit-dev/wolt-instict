@@ -11,9 +11,8 @@ export const PlusIcon = ({ title, ...props }: IconProps): JSX.Element => {
       {...props}
     >
       {title && <title>{title}</title>}
-      <g fill="currentColor">
+      <g>
         <path
-          fill="currentColor"
           stroke="currentColor"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -21,7 +20,6 @@ export const PlusIcon = ({ title, ...props }: IconProps): JSX.Element => {
           d="M9 3.25L9 14.75"
         />
         <path
-          fill="currentColor"
           stroke="currentColor"
           strokeLinecap="round"
           strokeLinejoin="round"

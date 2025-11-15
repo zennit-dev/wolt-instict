@@ -11,7 +11,7 @@ export const CheckIcon = ({ title, ...props }: IconProps): JSX.Element => {
       {...props}
     >
       {title && <title>{title}</title>}
-      <g fill="currentColor">
+      <g>
         <path
           d="M2.75 9.25L6.75 14.25L15.25 3.75"
           stroke="currentColor"

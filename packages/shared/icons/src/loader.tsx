@@ -11,14 +11,13 @@ export const LoaderIcon = ({ title, ...props }: IconProps): JSX.Element => {
       {...props}
     >
       {title && <title>{title}</title>}
-      <g fill="currentColor">
+      <g>
         <path
           d="M9 1.75V4.25"
           stroke="currentColor"
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
         <path
           opacity=".88"
@@ -27,7 +26,6 @@ export const LoaderIcon = ({ title, ...props }: IconProps): JSX.Element => {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
         <path
           opacity=".75"
@@ -36,7 +34,6 @@ export const LoaderIcon = ({ title, ...props }: IconProps): JSX.Element => {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
         <path
           opacity=".63"
@@ -45,7 +42,6 @@ export const LoaderIcon = ({ title, ...props }: IconProps): JSX.Element => {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
         <path
           opacity=".5"
@@ -54,7 +50,6 @@ export const LoaderIcon = ({ title, ...props }: IconProps): JSX.Element => {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
         <path
           opacity=".38"
@@ -63,7 +58,6 @@ export const LoaderIcon = ({ title, ...props }: IconProps): JSX.Element => {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
         <path
           opacity=".25"
@@ -72,7 +66,6 @@ export const LoaderIcon = ({ title, ...props }: IconProps): JSX.Element => {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
         <path
           opacity=".13"
@@ -81,7 +74,6 @@ export const LoaderIcon = ({ title, ...props }: IconProps): JSX.Element => {
           strokeWidth="1.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          fill="currentColor"
         />
       </g>
     </svg>

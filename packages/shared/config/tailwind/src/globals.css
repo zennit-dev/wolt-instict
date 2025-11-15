@@ -69,17 +69,31 @@
 }
 
 @variant dark {
-  /* foreground shades */
-  --color-background-dimmed: #040404;
-  --color-background: #121212;
-  --color-background-rich: hsl(240 3.7% 10%);
-  /* emphasis shades - relates to foreground like accent to background */
-  --color-accent-dimmed: #0f0f0f;
-  --color-accent: #373737;
-  --color-accent-rich: #000;
-  /* accent shades */
-  --color-emphasis-dimmed: #ececfb;
-  --color-emphasis: #373737;
-  --color-emphasis-rich: #e5e4f6;
-  --color-emphasis-foreground: #000;
+  /* background shades - dark blue-gray matching the design */
+  --color-background-dimmed: #0f172a; /* Dark slate background */
+  --color-background: #1e293b; /* Slightly lighter for contrast */
+  --color-background-rich: #334155; /* Even lighter for elevated surfaces */
+  /* foreground shades - white and gray text */
+  --color-foreground-dimmed: #9ca3af; /* Gray-400 for inactive text */
+  --color-foreground: #e5e7eb; /* Gray-200 for secondary text */
+  --color-foreground-rich: #f9fafb; /* Gray-50 for primary text */
+  /* emphasis shades - white text for primary content */
+  --color-emphasis-dimmed: #9ca3af; /* Gray-400 */
+  --color-emphasis: #d1d5db; /* Gray-300 */
+  --color-emphasis-rich: #ffffff; /* Pure white for primary text */
+  --color-emphasis-foreground: #1f2937; /* Dark for contrast */
+  /* accent shades - dark gray for cards and borders */
+  --color-accent-dimmed: #1f2937; /* Gray-800 */
+  --color-accent: #374151; /* Gray-700 */
+  --color-accent-rich: #4b5563; /* Gray-600 */
+  --color-accent-foreground: #f3f4f6; /* Gray-100 */
+  /* secondary shades - teal green matching the design */
+  --color-secondary-dimmed: #0d9488; /* Teal-600 */
+  --color-secondary: #14b8a6; /* Teal-500 */
+  --color-secondary-rich: #2dd4bf; /* Teal-400 */
+  /* info shades - blue for notifications and active states */
+  --color-info-dimmed: #1e40af; /* Blue-800 */
+  --color-info: #3b82f6; /* Blue-500 */
+  --color-info-rich: #60a5fa; /* Blue-400 */
+  --color-info-foreground: #dbeafe; /* Blue-100 */
 }
