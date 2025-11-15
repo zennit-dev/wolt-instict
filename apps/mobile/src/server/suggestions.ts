@@ -1,6 +1,8 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateObject, generateText } from "ai";
 import { z } from "zod";
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
 import type {
   MealRecommendationParams,
   AISuggestion,
@@ -68,17 +70,51 @@ const $Response = z.object({
     .describe("Estimated delivery time in seconds (typically 1200-3600, i.e., 20-60 minutes)"),
 });
 
+export interface GetSuggestionsOptions {
+  /** Optional path to CSV file containing dummy data */
+  csvFilePath?: string;
+  /** Optional CSV content string (alternative to csvFilePath) */
+  csvContent?: string;
+}
+
 export async function getSuggestions(
   params: MealRecommendationParams,
+  options?: GetSuggestionsOptions,
 ): Promise<AISuggestion> {
-
+  // Load CSV data if provided
+  let csvData = "";
+  if (options?.csvContent) {
+    csvData = options.csvContent;
+  } else if (options?.csvFilePath) {
+    const csvPath = options.csvFilePath.startsWith("/")
+      ? options.csvFilePath
+      : join(process.cwd(), options.csvFilePath);
+    if (existsSync(csvPath)) {
+      csvData = readFileSync(csvPath, "utf-8");
+    } else {
+      console.warn(`CSV file not found at ${csvPath}, continuing without CSV data`);
+    }
+  }
 
   // Build context vector string
   const contextVector = buildContextVector(params);
 
+  // Build prompt with optional CSV data
+  let csvSection = "";
+  if (csvData) {
+    csvSection = `## Reference Data (CSV)
+Below is CSV data containing examples of user context vectors and their parameters. Use this data to understand patterns and make informed suggestions:
+
+\`\`\`csv
+${csvData}
+\`\`\`
+
+`;
+  }
+
   const prompt = `${SYSTEM_PROMPT}
 
-## Current User Context Vector
+${csvSection}## Current User Context Vector
 ${contextVector}
 
 ## Output Requirements
@@ -264,4 +300,117 @@ function buildContextVector(params: MealRecommendationParams): string {
   }
 
   return context.join(", ");
+}
+
+/**
+ * Batch process multiple meal recommendation requests
+ * Useful for processing CSV data or testing multiple scenarios
+ * 
+ * @param paramsArray Array of MealRecommendationParams to process
+ * @param options Configuration options for batch processing
+ * @returns Array of results with success/error status
+ */
+export interface BatchProcessOptions {
+  /** Delay between individual requests in milliseconds (default: 500) */
+  delayBetweenRequests?: number;
+  /** Delay between batches in milliseconds (default: 2000) */
+  delayBetweenBatches?: number;
+  /** Number of requests to process in parallel per batch (default: 5) */
+  batchSize?: number;
+  /** Callback function called after each successful request */
+  onSuccess?: (params: MealRecommendationParams, result: AISuggestion, index: number) => void;
+  /** Callback function called after each failed request */
+  onError?: (params: MealRecommendationParams, error: Error, index: number) => void;
+  /** Callback function called after each batch completes */
+  onBatchComplete?: (batchNumber: number, successful: number, failed: number) => void;
+}
+
+export interface BatchProcessResult {
+  index: number;
+  params: MealRecommendationParams;
+  result?: AISuggestion;
+  error?: Error;
+  success: boolean;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function batchGetSuggestions(
+  paramsArray: MealRecommendationParams[],
+  options: BatchProcessOptions = {},
+): Promise<BatchProcessResult[]> {
+  const {
+    delayBetweenRequests = 500,
+    delayBetweenBatches = 2000,
+    batchSize = 5,
+    onSuccess,
+    onError,
+    onBatchComplete,
+  } = options;
+
+  const results: BatchProcessResult[] = [];
+  const totalBatches = Math.ceil(paramsArray.length / batchSize);
+
+  for (let batchIndex = 0; batchIndex < totalBatches; batchIndex++) {
+    const startIndex = batchIndex * batchSize;
+    const batch = paramsArray.slice(startIndex, startIndex + batchSize);
+
+    // Process batch in parallel (or sequentially with delays)
+    const batchPromises = batch.map(async (params, indexInBatch) => {
+      const globalIndex = startIndex + indexInBatch;
+      
+      try {
+        // Add delay before each request (except the first one in a batch)
+        if (indexInBatch > 0) {
+          await sleep(delayBetweenRequests);
+        }
+
+        const result = await getSuggestions(params);
+        
+        if (onSuccess) {
+          onSuccess(params, result, globalIndex);
+        }
+
+        return {
+          index: globalIndex,
+          params,
+          result,
+          success: true,
+        } as BatchProcessResult;
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        
+        if (onError) {
+          onError(params, err, globalIndex);
+        }
+
+        return {
+          index: globalIndex,
+          params,
+          error: err,
+          success: false,
+        } as BatchProcessResult;
+      }
+    });
+
+    const batchResults = await Promise.all(batchPromises);
+    results.push(...batchResults);
+
+    // Count successful and failed requests in this batch
+    const batchSuccessful = batchResults.filter((r) => r.success).length;
+    const batchFailed = batchResults.filter((r) => !r.success).length;
+
+    if (onBatchComplete) {
+      onBatchComplete(batchIndex + 1, batchSuccessful, batchFailed);
+    }
+
+    // Delay between batches (except for the last one)
+    if (batchIndex < totalBatches - 1) {
+      await sleep(delayBetweenBatches);
+    }
+  }
+
+  return results;
 }

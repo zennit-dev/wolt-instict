@@ -1,2 +1,8 @@
 export { getMealRecommendation } from "./meal-recommendation";
-export { getSuggestions } from "./suggestions";
+export { 
+  getSuggestions, 
+  batchGetSuggestions, 
+  type BatchProcessOptions, 
+  type BatchProcessResult,
+  type GetSuggestionsOptions,
+} from "./suggestions";
