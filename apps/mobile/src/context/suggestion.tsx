@@ -58,11 +58,14 @@ export const SuggestionProvider = ({ children }: PropsWithChildren) => {
     data: suggestion,
     isFetching,
     isLoading,
+    error,
   } = useQuery({
     queryKey: ["suggestions", counter],
     queryFn: () => getSuggestions(user.id, override),
     placeholderData: keepPreviousData,
   });
+
+  console.log({ error });
 
   const context = useMemo(
     () => ({
