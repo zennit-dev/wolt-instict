@@ -55,12 +55,13 @@ export default () => {
             Experience the future of food delivery, install the app and let us
             know what you think.
           </p>
-          <button
+          <a
             type="button"
-            className="flex flex items-center items-center justify-center gap-4 rounded-full border border-white bg-primary p-0.5 px-4 py-2 font-semibold text-white transition-all duration-300 hover:bg-primary-rich active:scale-95"
+            href="http://yqunrsu-zennitdev-xhurianshaba-8081.exp.direct/_expo/loading"
+            className="flex items-center items-center justify-center gap-4 rounded-full border border-white bg-primary p-0.5 px-4 py-2 font-semibold text-white transition-all duration-300 hover:bg-primary-rich active:scale-95"
           >
             Install App <ArrowRightIcon className="h-4 w-4 fill-white" />
-          </button>
+          </a>
         </div>
       </section>
     </main>
