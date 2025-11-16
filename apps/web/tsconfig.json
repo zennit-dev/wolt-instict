@@ -1,0 +1,17 @@
+{
+  "extends": "@zenncore/web/ts-config",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/public/*": ["./public/*"],
+      "@/declarations/*": ["./declarations/*"]
+    }
+  },
+  "include": [".", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".next"]
+}

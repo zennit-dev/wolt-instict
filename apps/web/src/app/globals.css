@@ -1,0 +1,6 @@
+@import "@zenncore/tailwind-config";
+@import "@zenncore/web/tailwind-config";
+
+@theme inline {
+  --font-body: var(--font-inter);
+}

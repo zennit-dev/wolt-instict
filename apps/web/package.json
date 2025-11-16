@@ -18,7 +18,7 @@
     "@zenncore/utils": "workspace:*",
     "@zenncore/web": "workspace:*",
     "motion": "^12.23.24",
-    "next": "^16.0.3",
+    "next": "^16.0.2-canary.21",
     "react": "catalog:",
     "react-dom": "^19.2.0",
     "react-hook-form": "catalog:",
